@@ -104,12 +104,12 @@ namespace PDF_Form_Filler.Utility
                         }
                         else
                         {
-                            MessageBox.Show("Fehler", "Keine Felder im .pdf gefunden.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("Keine Felder im .pdf gefunden.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                     else
                     {
-                        MessageBox.Show("Fehler", "Das .pdf enthält kein interaktives  Feld.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("Das .pdf enthält kein interaktives  Feld.", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
             }
