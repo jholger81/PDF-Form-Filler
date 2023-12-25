@@ -11,6 +11,7 @@ using System.IO;
 using System.Windows.Forms;
 using PDF_Form_Filler.Properties;
 using PDF_Form_Filler.Models;
+using System.Runtime;
 
 namespace PDF_Form_Filler.Utility
 {
@@ -42,7 +43,6 @@ namespace PDF_Form_Filler.Utility
 
                         if (form != null)
                         {
-                            //foreach (var mystring in strings)
                             foreach (var item in fields)
                             {
                                 PdfFormField field = form.GetField(item.Name);
@@ -68,7 +68,6 @@ namespace PDF_Form_Filler.Utility
 
         public static List<PdfField> ReadPdfForms(string filePath, Readmode readmode = Readmode.ReadAll)
         {
-            //List<string> strings = new List<string>();
             List<PdfField> fieldList = new List<PdfField>();
 
             using (PdfReader pdfReader = new PdfReader(filePath))
@@ -98,7 +97,6 @@ namespace PDF_Form_Filler.Utility
                                     newField.Value = field.GetValue()?.ToString() != null ? field.GetValue()?.ToString() : "";
                                     newField.Type = field.GetFormType().ToString();
                                     fieldList.Add(newField);
-                                    //strings.Add(field.GetFieldName().ToString());
                                 }
                             }
                         }
@@ -113,11 +111,10 @@ namespace PDF_Form_Filler.Utility
                     }
                 }
             }
-            //return strings;
             return fieldList;
         }
 
-        public static void CreateConfig(string filePath, string outputDir/*, string configPath*/)
+        public static void CreateConfig(string filePath, string outputDir)
         {
             Config config = new Config();
             var originalFilepath = $"{Path.Combine(outputDir, Path.GetFileNameWithoutExtension(filePath))}_original.pdf";
@@ -130,121 +127,38 @@ namespace PDF_Form_Filler.Utility
             config.Save(outputFilepath);
         }
 
-
-        //static void CreateEmptyConfig(string filePath, string outputFilepath)
-        //{
-        //    Settings settings = new Settings();
-
-
-
-
-        //    //var outputFilepath = $"{filePath.Split(".pdf")[0]}_modified.pdf";
-        //    using (PdfReader pdfReader = new PdfReader(filePath))
-        //    {
-        //        using (PdfWriter pdfWriter = new PdfWriter(outputFilepath))
-        //        {
-        //            using (PdfDocument pdfDocument = new PdfDocument(pdfReader, pdfWriter))
-        //            {
-        //                PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDocument, true);
-
-        //                if (form != null)
-        //                {
-        //                    // static fields from config: Kunde
-        //                    PdfFormField field_Vorname_Name1 = form.GetField("E1_Text1");
-        //                    PdfFormField field_Vorname_Name2 = form.GetField("E1_Text5");
-        //                    PdfFormField field_Vorname_Name3 = form.GetField("E1_Text9");
-        //                    PdfFormField field_Vorname_Name4 = form.GetField("E2_Text1");
-        //                    PdfFormField field_Vorname_Name5 = form.GetField("E3_Text1");
-        //                    field_Vorname_Name1.SetValue($"{settings.Kunde.Single(x => x.Key == "Vorname").Value} {settings.Kunde.Single(x => x.Key == "Name").Value}");
-        //                    field_Vorname_Name2.SetValue($"{settings.Kunde.Single(x => x.Key == "Vorname").Value} {settings.Kunde.Single(x => x.Key == "Name").Value}");
-        //                    field_Vorname_Name3.SetValue($"{settings.Kunde.Single(x => x.Key == "Vorname").Value} {settings.Kunde.Single(x => x.Key == "Name").Value}");
-        //                    field_Vorname_Name4.SetValue($"{settings.Kunde.Single(x => x.Key == "Vorname").Value} {settings.Kunde.Single(x => x.Key == "Name").Value}");
-        //                    field_Vorname_Name5.SetValue($"{settings.Kunde.Single(x => x.Key == "Vorname").Value} {settings.Kunde.Single(x => x.Key == "Name").Value}");
-
-        //                    PdfFormField field_Str_Hausnr1 = form.GetField("E1_Text2");
-        //                    PdfFormField field_Str_Hausnr2 = form.GetField("E1_Text6");
-        //                    PdfFormField field_Str_Hausnr3 = form.GetField("E1_Text10");
-        //                    PdfFormField field_Str_Hausnr4 = form.GetField("E2_Text2");
-        //                    PdfFormField field_Str_Hausnr5 = form.GetField("E3_Text2");
-        //                    field_Str_Hausnr1.SetValue($"{settings.Kunde.Single(x => x.Key == "Strasse").Value} {settings.Kunde.Single(x => x.Key == "Hausnummer").Value}");
-        //                    field_Str_Hausnr2.SetValue($"{settings.Kunde.Single(x => x.Key == "Strasse").Value} {settings.Kunde.Single(x => x.Key == "Hausnummer").Value}");
-        //                    field_Str_Hausnr3.SetValue($"{settings.Kunde.Single(x => x.Key == "Strasse").Value} {settings.Kunde.Single(x => x.Key == "Hausnummer").Value}");
-        //                    field_Str_Hausnr4.SetValue($"{settings.Kunde.Single(x => x.Key == "Strasse").Value} {settings.Kunde.Single(x => x.Key == "Hausnummer").Value}");
-        //                    field_Str_Hausnr5.SetValue($"{settings.Kunde.Single(x => x.Key == "Strasse").Value} {settings.Kunde.Single(x => x.Key == "Hausnummer").Value}");
-
-        //                    PdfFormField field_PLZ_Ort1 = form.GetField("E1_Text3");
-        //                    PdfFormField field_PLZ_Ort2 = form.GetField("E1_Text7");
-        //                    PdfFormField field_PLZ_Ort3 = form.GetField("E1_Text11");
-        //                    PdfFormField field_PLZ_Ort4 = form.GetField("E2_Text3");
-        //                    PdfFormField field_PLZ_Ort5 = form.GetField("E3_Text3");
-        //                    field_PLZ_Ort1.SetValue($"{settings.Kunde.Single(x => x.Key == "PLZ").Value} {settings.Kunde.Single(x => x.Key == "Ort").Value}");
-        //                    field_PLZ_Ort2.SetValue($"{settings.Kunde.Single(x => x.Key == "PLZ").Value} {settings.Kunde.Single(x => x.Key == "Ort").Value}");
-        //                    field_PLZ_Ort3.SetValue($"{settings.Kunde.Single(x => x.Key == "PLZ").Value} {settings.Kunde.Single(x => x.Key == "Ort").Value}");
-        //                    field_PLZ_Ort4.SetValue($"{settings.Kunde.Single(x => x.Key == "PLZ").Value} {settings.Kunde.Single(x => x.Key == "Ort").Value}");
-        //                    field_PLZ_Ort5.SetValue($"{settings.Kunde.Single(x => x.Key == "PLZ").Value} {settings.Kunde.Single(x => x.Key == "Ort").Value}");
-
-        //                    PdfFormField field_Tel_Mail1 = form.GetField("E1_Text4");
-        //                    PdfFormField field_Tel_Mail2 = form.GetField("E1_Text8");
-        //                    PdfFormField field_Tel_Mail3 = form.GetField("E1_Text12");
-        //                    field_Tel_Mail1.SetValue($"{settings.Kunde.Single(x => x.Key == "Telefon").Value} {settings.Kunde.Single(x => x.Key == "Email").Value}");
-        //                    field_Tel_Mail2.SetValue($"{settings.Kunde.Single(x => x.Key == "Telefon").Value} {settings.Kunde.Single(x => x.Key == "Email").Value}");
-        //                    field_Tel_Mail3.SetValue($"{settings.Kunde.Single(x => x.Key == "Telefon").Value} {settings.Kunde.Single(x => x.Key == "Email").Value}");
+        public static void FillPDF(string filePath, string outputDir, Config config)
+        {
+            var originalFilepath = $"{Path.Combine(outputDir, Path.GetFileNameWithoutExtension(filePath))}_original.pdf";
+            CheckForOriginal(filePath, originalFilepath);
+            var outputFilePath = $"{Path.Combine(outputDir, Path.GetFileNameWithoutExtension(filePath))}_modified.pdf";
+            File.Copy(filePath, outputFilePath, true);
 
 
-        //                    // static fields from config: Kunde
-        //                    PdfFormField Selbst_Firma_Ort1 = form.GetField("E1_Text13");
-        //                    PdfFormField Selbst_Firma_Ort2 = form.GetField("E3_Text4");
-        //                    Selbst_Firma_Ort1.SetValue($"{settings.Selbst.Single(x => x.Key == "Firma").Value} {settings.Selbst.Single(x => x.Key == "Ort").Value}");
-        //                    Selbst_Firma_Ort2.SetValue($"{settings.Selbst.Single(x => x.Key == "Firma").Value} {settings.Selbst.Single(x => x.Key == "Ort").Value}");
+            using (PdfReader pdfReader = new PdfReader(filePath))
+            {
+                using (PdfWriter pdfWriter = new PdfWriter(outputFilePath))
+                {
+                    using (PdfDocument pdfDocument = new PdfDocument(pdfReader, pdfWriter))
+                    {
+                        PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDocument, true);
 
-        //                    PdfFormField Selbst_Eintragungsnummer1 = form.GetField("E1_Text14");
-        //                    Selbst_Eintragungsnummer1.SetValue($"{settings.Selbst.Single(x => x.Key == "Eintragungsnummer").Value}");
+                        if (form != null)
+                        {
+                            foreach (PdfField field in config.Fields)
+                            {
+                                PdfFormField pdfField = form.GetField(field.Name);
 
-        //                    PdfFormField Selbst_Netzbetreiber1 = form.GetField("E1_Text15");
-        //                    Selbst_Netzbetreiber1.SetValue($"{settings.Selbst.Single(x => x.Key == "Netzbetreiber").Value}");
+                                if (pdfField != null)
+                                {
+                                    pdfField.SetValue(field.Value);
+                                }
+                            }
 
-        //                    PdfFormField Selbst_Einrichter_Telefon1 = form.GetField("E3_Text5");
-        //                    Selbst_Einrichter_Telefon1.SetValue($"{settings.Selbst.Single(x => x.Key == "Einrichter_Telefon").Value}");
-
-        //                    PdfFormField Selbst_Einrichter_Email1 = form.GetField("E3_Text6");
-        //                    Selbst_Einrichter_Email1.SetValue($"{settings.Selbst.Single(x => x.Key == "Einrichter_Email").Value}");
-
-
-        //                    // Textfields
-        //                    foreach (var keyvaluepair in settings.Textfields)
-        //                    {
-        //                        PdfFormField field = form.GetField(keyvaluepair.Key);
-
-        //                        if (field != null)
-        //                        {
-        //                            field.SetValue(keyvaluepair.Value);
-        //                        }
-        //                    }
-        //                    // Checkboxes
-        //                    foreach (var keyvaluepair in settings.Checkboxes)
-        //                    {
-        //                        PdfFormField field = form.GetField(keyvaluepair.Key);
-
-        //                        if (field != null)
-        //                        {
-        //                            field.SetValue(keyvaluepair.Value);
-        //                        }
-        //                    }
-        //                    // Groups
-        //                    foreach (var keyvaluepair in settings.Groups)
-        //                    {
-        //                        PdfFormField field = form.GetField(keyvaluepair.Key);
-
-        //                        if (field != null)
-        //                        {
-        //                            field.SetValue(keyvaluepair.Value);
-        //                        }
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
-
+                        }
+                    }
+                }
+            }
+        }
     }
 }
