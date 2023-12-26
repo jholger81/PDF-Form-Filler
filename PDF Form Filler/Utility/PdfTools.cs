@@ -1,6 +1,7 @@
 ﻿using iText.Forms.Fields;
 using iText.Forms;
 using iText.Kernel.Pdf;
+using iText.Layout;
 using Org.BouncyCastle.Utilities;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,16 @@ using System.Windows.Forms;
 using PDF_Form_Filler.Properties;
 using PDF_Form_Filler.Models;
 using System.Runtime;
+using System.Drawing;
+using iText.Layout.Element;
+using iText.Layout.Properties;
+using iText.Kernel.Pdf.Canvas;
+using iText.Kernel.Geom;
+using System.Drawing.Printing;
+using iText.Layout.Renderer;
+using iText.IO.Font;
+using iText.Kernel.Font;
+using iText.Kernel.Colors;
 
 namespace PDF_Form_Filler.Utility
 {
@@ -27,9 +38,9 @@ namespace PDF_Form_Filler.Utility
 
         public static void ShowFieldsInPDF(string filePath, string outputDir)
         {
-            var originalFilepath = $"{Path.Combine(outputDir, Path.GetFileNameWithoutExtension(filePath))}_original.pdf";
+            var originalFilepath = $"{System.IO.Path.Combine(outputDir, System.IO.Path.GetFileNameWithoutExtension(filePath))}_original.pdf";
             var fields = ReadPdfForms(filePath);
-            var outputFilepath = $"{Path.Combine(outputDir, Path.GetFileNameWithoutExtension(filePath))}_overview.pdf";
+            var outputFilepath = $"{System.IO.Path.Combine(outputDir, System.IO.Path.GetFileNameWithoutExtension(filePath))}_overview.pdf";
 
             CheckForOriginal(filePath, originalFilepath);
 
@@ -49,10 +60,20 @@ namespace PDF_Form_Filler.Utility
 
                                 if (field != null)
                                 {
-                                    field.SetValue(item.Name);
+                                    if (item.Type.ToLower() == "/tx")
+                                    {
+                                        field.SetValue(item.Name);
+                                    }
                                 }
                             }
                         }
+                    }
+                }
+                foreach (var item in fields)
+                {
+                    if (item.Type.ToLower() == "/btn")
+                    {
+                        WriteTextToPdf(outputFilepath, item);
                     }
                 }
             }
@@ -96,6 +117,7 @@ namespace PDF_Form_Filler.Utility
                                     newField.Name = field.GetFieldName().ToString();
                                     newField.Value = field.GetValue()?.ToString() != null ? field.GetValue()?.ToString() : "";
                                     newField.Type = field.GetFormType().ToString();
+                                    newField.Attributes = GetFieldPosition(filePath, newField.Name);
                                     fieldList.Add(newField);
                                 }
                             }
@@ -117,9 +139,9 @@ namespace PDF_Form_Filler.Utility
         public static void CreateConfig(string filePath, string outputDir)
         {
             Config config = new Config();
-            var originalFilepath = $"{Path.Combine(outputDir, Path.GetFileNameWithoutExtension(filePath))}_original.pdf";
+            var originalFilepath = $"{System.IO.Path.Combine(outputDir, System.IO.Path.GetFileNameWithoutExtension(filePath))}_original.pdf";
             var fields = ReadPdfForms(filePath);
-            var outputFilepath = $"{Path.Combine(outputDir, Path.GetFileNameWithoutExtension(filePath))}.json";
+            var outputFilepath = $"{System.IO.Path.Combine(outputDir, System.IO.Path.GetFileNameWithoutExtension(filePath))}.json";
 
             CheckForOriginal(filePath, originalFilepath);
 
@@ -129,9 +151,9 @@ namespace PDF_Form_Filler.Utility
 
         public static void FillPDF(string filePath, string outputDir, Config config)
         {
-            var originalFilepath = $"{Path.Combine(outputDir, Path.GetFileNameWithoutExtension(filePath))}_original.pdf";
+            var originalFilepath = $"{System.IO.Path.Combine(outputDir, System.IO.Path.GetFileNameWithoutExtension(filePath))}_original.pdf";
             CheckForOriginal(filePath, originalFilepath);
-            var outputFilePath = $"{Path.Combine(outputDir, Path.GetFileNameWithoutExtension(filePath))}_modified.pdf";
+            var outputFilePath = $"{System.IO.Path.Combine(outputDir, System.IO.Path.GetFileNameWithoutExtension(filePath))}_modified.pdf";
             File.Copy(filePath, outputFilePath, true);
 
 
@@ -159,6 +181,60 @@ namespace PDF_Form_Filler.Utility
                     }
                 }
             }
+        }
+
+        public static PdfFieldAttributes GetFieldPosition(string filePath, string fieldName)
+        {
+            PdfFieldAttributes attributes = new PdfFieldAttributes();
+
+            using (PdfReader reader = new PdfReader(filePath))
+            {
+                using (PdfDocument pdfDoc = new PdfDocument(reader))
+                {
+                    PdfAcroForm form = PdfAcroForm.GetAcroForm(pdfDoc, false);
+                    PdfFormField field = form.GetField(fieldName);
+                    PdfPage page = field.GetWidgets().First().GetPage();
+                    attributes.Page = pdfDoc.GetPageNumber(page);
+
+                    PdfArray annotationRect = field.GetWidgets().First().GetRectangle();
+                    attributes.X = annotationRect.GetAsNumber(0).FloatValue();
+                    attributes.Y = annotationRect.GetAsNumber(1).FloatValue();
+                }
+            }
+            return attributes;
+        }
+
+        public static void WriteTextToPdf(string outputFilePath, PdfField field)
+        {
+            string filePath = $"{outputFilePath}_temp";
+            File.Copy(outputFilePath, filePath);
+
+            PdfDocument srcDocument = new PdfDocument(new PdfReader(filePath));
+            PdfDocument destDocument = new PdfDocument(new PdfWriter(outputFilePath));
+
+            FontProgram fontProgram = FontProgramFactory.CreateFont();
+            PdfFont calibri = PdfFontFactory.CreateFont(fontProgram, PdfEncodings.WINANSI);
+
+            int pagesCount = srcDocument.GetNumberOfPages();
+            for (int i = 1; i <= pagesCount; i++)
+            {
+                srcDocument.CopyPagesTo(i, i, destDocument);
+                if (field.Attributes.Page != i)
+                    continue;
+                PdfCanvas pdfCanvas = new PdfCanvas(destDocument.GetPage(i));
+                Canvas canvas = new Canvas(pdfCanvas, new iText.Kernel.Geom.Rectangle(field.Attributes.X, field.Attributes.Y-35, 100, 50)); // TODO : -35 ersetzen, Abstand/Höhe des footers?
+                canvas.Add(new Paragraph(field.Name).SetRotationAngle(0).SetFont(calibri).SetFontSize(10).SetFontColor(ColorConstants.RED).SetBackgroundColor(ColorConstants.WHITE));
+                canvas.Close();
+            }
+            srcDocument.Close();
+            destDocument.Close();
+
+            File.Delete(filePath);
+        }
+
+        public static void WriteTextToPdf(string outputFilePath, List<PdfField> fields)
+        {
+            throw new NotImplementedException();
         }
     }
 }
