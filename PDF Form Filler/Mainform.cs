@@ -104,11 +104,13 @@ namespace PDF_Form_Filler
             if (!File.Exists(fileName))
                 return;
             config.Load(fileName);
-
-
-
-            // TODO: Dinge mit der geladenen config.json machen
             Utility.PdfTools.FillPDF(this.tb_pdfload.Text, this.tb_pathoutput.Text, config);
+        }
+
+        private void btn_help_Click(object sender, EventArgs e)
+        {
+            // TODO Hilfe Form erstellen und öffnen
+            Console.WriteLine();
         }
     }
 }

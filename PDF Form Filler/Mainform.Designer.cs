@@ -39,6 +39,7 @@
             this.tb_pdfload = new System.Windows.Forms.TextBox();
             this.tb_pathoutput = new System.Windows.Forms.TextBox();
             this.btn_fillpdf = new System.Windows.Forms.Button();
+            this.btn_help = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btn_pdfload
@@ -77,7 +78,7 @@
             // tb_configload
             // 
             this.tb_configload.Location = new System.Drawing.Point(108, 258);
-            this.tb_configload.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tb_configload.Margin = new System.Windows.Forms.Padding(4);
             this.tb_configload.Name = "tb_configload";
             this.tb_configload.Size = new System.Drawing.Size(343, 22);
             this.tb_configload.TabIndex = 8;
@@ -128,7 +129,7 @@
             // tb_pdfload
             // 
             this.tb_pdfload.Location = new System.Drawing.Point(108, 21);
-            this.tb_pdfload.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tb_pdfload.Margin = new System.Windows.Forms.Padding(4);
             this.tb_pdfload.Name = "tb_pdfload";
             this.tb_pdfload.Size = new System.Drawing.Size(343, 22);
             this.tb_pdfload.TabIndex = 4;
@@ -136,7 +137,7 @@
             // tb_pathoutput
             // 
             this.tb_pathoutput.Location = new System.Drawing.Point(108, 89);
-            this.tb_pathoutput.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.tb_pathoutput.Margin = new System.Windows.Forms.Padding(4);
             this.tb_pathoutput.Name = "tb_pathoutput";
             this.tb_pathoutput.Size = new System.Drawing.Size(343, 22);
             this.tb_pathoutput.TabIndex = 5;
@@ -152,11 +153,23 @@
             this.btn_fillpdf.UseVisualStyleBackColor = true;
             this.btn_fillpdf.Click += new System.EventHandler(this.btn_fillpdf_Click);
             // 
+            // btn_help
+            // 
+            this.btn_help.Location = new System.Drawing.Point(260, 299);
+            this.btn_help.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btn_help.Name = "btn_help";
+            this.btn_help.Size = new System.Drawing.Size(93, 49);
+            this.btn_help.TabIndex = 11;
+            this.btn_help.Text = "???";
+            this.btn_help.UseVisualStyleBackColor = true;
+            this.btn_help.Click += new System.EventHandler(this.btn_help_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(463, 356);
+            this.Controls.Add(this.btn_help);
             this.Controls.Add(this.btn_fillpdf);
             this.Controls.Add(this.btn_configedit);
             this.Controls.Add(this.tb_configload);
@@ -189,6 +202,7 @@
         private System.Windows.Forms.TextBox tb_pdfload;
         private System.Windows.Forms.TextBox tb_pathoutput;
         private System.Windows.Forms.Button btn_fillpdf;
+        private System.Windows.Forms.Button btn_help;
     }
 }
 
